@@ -1,0 +1,290 @@
+Iris through Erlang... API v1
+Taking gen_server to the next level
+
+Péter Szilágyi
+
+European Institute for Innovation and Technology
+Eötvös Loránd University, Budapest, Hungary
+Babeş-Bolyai University, Cluj-Napoca, Romania
+
+http://iris.karalabe.com
+@iriscmf
+
+peterke@gmail.com
+@peter_szilagyi
+
+* What the heck is Iris?
+
+* Decentralized cloud messaging
+
+- Zero configuration, self organization, semantic addressing
+- Perfect secrecy against passive and active attacks
+- Beautiful, simple and language agnostic API
+
+.image erlang.v1/whitespace.png 0 0
+
+I.e. If starting a batch of VMs on Google Compute Engine is a one liner,
+
+  gcutil addinstance vm-1 vm-2 ... vm-N
+
+.image erlang.v1/whitespace.png 0 0
+
+Assembling them into a distributed system should be a one liner too!
+
+  iris -net <service name> -rsa <private key>
+
+* What can it do?
+
+* It communicates, of course!
+
+.image erlang.v1/img/overview_schemes.png 280 0
+
+- Req/Rep: Load balanced request handling by a specific cluster of nodes
+- Broadcast: Multicast messaging to all members of a cluster of nodes
+- Tunnel: Stream oriented, ordered and throttled data exchange
+- Pub/Sub: Multicast messaging to all subscribers of a topic
+
+* What makes it special? Simplicity!
+
+* Instances consolidated based on responsibility
+
+.image erlang.v1/img/overview_instances_vs_clusters.png 283 0
+
+Clusters are the smallest _logical_ units
+
+- Any number of instances may join the same cluster
+- Clusters are addressable, individual instances aren't
+
+⊕ Harder to abuse, fewer moving components, self organization
+
+* Meaningful and non-dynamic addressing
+
+.image erlang.v1/img/overview_physical_vs_semantic.png 283 0
+
+Routing based on semantic addressing
+
+- Clusters can be reached through their textual names
+- Clients can request delivery to a single or all members
+
+⊕ Implicit failovers, automatic load balancing, simpler client code
+
+* Implicit security while trusting the trustworthy
+
+.image erlang.v1/img/overview_authentication_and_encryption.png 283 0
+
+Security at service level
+
+- All members of a service are trusted transitively
+- Gateway nodes can protect federated services
+
+⊕ Decoupled system, optimized encryption, out of the box
+
+* Show me the code!
+
+* Challenge #0 – Boilerplate
+
+Assemble a network of micro services:
+
+- Connect arbitrarily many service instances
+- Permit any number to be under the same name
+- Enable decentralized communication between them
+
+.html erlang.v1/embed/challenge_screws.html
+
+* Solution #0 – Behavior iris_server
+
+.play erlang.v1/src/behavior.erl /START OMIT/,/END OMIT/ HLbeh
+
+_Note:_Connecting_as_a_simple_client_is_ [[http://iris.karalabe.com/docs/iris-erl.v1/iris_client.html#start-1][_also_supported_]].
+
+* Behavior life-cycle highlights
+
+.html erlang.v1/ref/iris_server_start.html
+
+  iris_server:start(Port::int(), Cluster::string(), Module::atom(), Args::term()) → Service
+- Connects to the local Iris message relay on port _Port_
+- Registers the connecting service as a member of _Cluster_
+- Assigns _Module_ as the callback for inbound service events
+
+.image erlang.v1/whitespace.png 0 0
+
+.html erlang.v1/ref/iris_server_module_init.html
+
+  Module:init(Client :: iris:client(), Args :: term()) → {ok, State :: term()}
+- Called once after the service is registered into the Iris network
+- May initialize state dependent on the live connection or user _Args_
+
+.image erlang.v1/whitespace.png 0 0
+
+Termination was omitted, but is completely analogous to _gen__server_.
+
+* Challenge #1 – Web requests
+
+Simulate a system for handling web requests:
+
+- Browsers issue requests
+- Web servers handle requests
+- Distribute requests between servers
+
+.html erlang.v1/embed/challenge_web.html
+
+* Solution #1 – Browser
+
+.play erlang.v1/src/webbrowser.erl /START OMIT/,/END OMIT/ HLreq
+
+_Hint:_Start_ [[erlang.v1.slide#16][_some_]] _webservers_and_check_back_ 😉
+
+* Solution #1 – Web server
+
+.play erlang.v1/src/webserver.erl /START OMIT/,/END OMIT/ HLreq
+
+_The_presentation_supports_only_one_active_demo_process_per_window._ [[erlang.v1.slide#16][_Open_]] _new_tab?_
+
+* Request / Reply highlights
+
+.html erlang.v1/ref/iris_client_request.html
+
+  iris_client:request(Client, Cluster::string(), Request::binary(), timeout::int()) → Reply
+- Issues a synchronous _Request_ to member of _Cluster_
+- Requests are load balanced between all members of _Cluster_
+
+.image erlang.v1/whitespace.png 0 0
+
+.html erlang.v1/ref/iris_server_module_handle_request.html
+
+  Module:handle_request(Request :: binary(), State :: term()) → {reply, Response, State}
+- Invoked when a request arrives to the local service
+- Response (reply or error) is forwarded back to the caller
+- _Module_ is the callback handler specified during _iris__server:start_
+
+.html erlang.v1/embed/scheme_reqrep.html
+
+* Challenge #2 – Aperture Science Enrichment Center 😈
+
+Implement the comlink for Aperture Laboratories¹:
+
+- Tune in with Chell to the official messages
+- Send the usual good wishes from GLaDOS
+- Maybe find some old message remnants?
+
+.html erlang.v1/embed/challenge_portal.html
+.html erlang.v1/embed/challenge_portal_footnote.html
+
+* Solution #2 – GLaDOS
+
+.play erlang.v1/src/portalglados.erl /START OMIT/,/END OMIT/ HLpub
+
+_Hint:_Boot_GLaDOS_and_let_the_ [[erlang.v1.slide#20][_experiment_]] _begin_ 😉
+
+* Solution #2 – Chell
+
+.play erlang.v1/src/portalchell.erl /START OMIT/,/END OMIT/ HLsub
+
+_Hint:_Maybe_there_is_an_"unofficial"_channel?_ 😉
+
+* Publish / Subscribe highlights
+
+.html erlang.v1/ref/iris_client_subscribe.html
+
+  iris_client:subscribe(Client, Topic :: string(), Module :: atom(), Args :: term())
+- Subscribes the connection to events sent to _Topic_
+- Assigns _Module_ as the callback, initializing it with _Args_
+- The same life-cycle methods gen invoked as in _iris__server_
+
+.image erlang.v1/whitespace.png 0 0
+
+.html erlang.v1/ref/iris_client_publish.html
+
+	iris_client:publish(Client, Topic :: string(), Event :: binary())
+- Publishes an event asynchronously to _Topic_
+
+.html erlang.v1/embed/scheme_pubsub.html
+.html erlang.v1/ref/iris_topic_module_handle_event.html
+
+	Module:handle_event(Event :: binary(), State :: term()) → {noreply, State}
+- Invoked when an event arrives to the subscribed topic
+- _Module_ is the callback handler specified during subscription
+
+* Challenge #3 – Data repository
+
+Implement a data distribution system:
+
+- Repositories store potentially large datasets
+- Clients make requests for the data blobs
+- Ordered and throttled data transfers
+
+.html erlang.v1/embed/challenge_repo.html
+
+* Solution #3 – Client
+
+.play erlang.v1/src/repoclient.erl /START OMIT/,/END OMIT/ HLtunnel
+
+_Hint:_Start_ [[erlang.v1.slide#24][_some_]] _data_repositories_ 😉
+
+* Solution #3 – Data store
+
+.play erlang.v1/src/reposerver.erl /START OMIT/,/END OMIT/ HLtunnel
+
+Note, service registration was omitted for clarity.
+
+.image erlang.v1/whitespace.png 0 0
+
+_The_presentation_supports_only_one_active_demo_process_per_window._ [[erlang.v1.slide#24][_Open_]] _new_tab?_
+
+* Tunnel highlights
+
+.html erlang.v1/ref/iris_client_tunnel.html
+
+  iris_client:tunnel(Client, Cluster :: string(), Timeout :: int()) → Tunnel
+- Opens a direct tunnel to a member of _Cluster_
+- Order is guaranteed, data flow is throttled
+
+.image erlang.v1/whitespace.png 0 0
+
+.html erlang.v1/ref/iris_tunnel_send.html
+
+  iris_tunnel:send(Tunnel, Message :: binary, Timeout :: int())
+- Sends a message over the tunnel to the remote pair
+- Partial sends (timeout) are discarded remotely
+
+.html erlang.v1/embed/scheme_tunnel.html
+.html erlang.v1/ref/iris_tunnel_recv.html
+
+	iris_tunnel:recv(Tunnel, Timeout :: int()) → Message
+- Retrieves a message from the tunnel
+
+* How does this all work?
+
+* Sneak behind the scenes
+
+.html erlang.v1/embed/overview_relay.html
+
+Iris nodes do the heavy lifting (one/host):
+
+- Service discovery
+- Message routing
+- Data encryption
+- Load balancing
+
+.image erlang.v1/whitespace.png 0 0
+
+Thin clients bathe in the glory:
+
+- Connect to a local Iris node
+- Send all the messages!
+
+* Where to go next?
+
+Iris resources
+
+- Project website: [[http://iris.karalabe.com]]
+- The book of Iris: [[http://iris.karalabe.com/book]]
+- Yummy goodies: [[http://iris.karalabe.com/talks][talks]] | [[http://iris.karalabe.com/papers][papers]] | [[http://iris.karalabe.com/downloads][downloads]]
+
+.image erlang.v1/whitespace.png 0 0
+
+Iris community:
+
+- Google group: [[https://groups.google.com/group/project-iris][project-iris]]
+- Twitter announces: [[https://twitter.com/iriscmf][@iriscmf]]
+- GitHub organization: [[https://github.com/project-iris][project-iris]]

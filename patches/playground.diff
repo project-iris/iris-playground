@@ -1,0 +1,128 @@
+diff -r 2f7aa2d4d377 playground/socket/socket.go
+--- a/playground/socket/socket.go	Fri Aug 01 15:04:49 2014 -0700
++++ b/playground/socket/socket.go	Sun Sep 21 10:56:11 2014 +0300
+@@ -28,6 +28,7 @@
+ 	"os"
+ 	"os/exec"
+ 	"path/filepath"
++	"regexp"
+ 	"runtime"
+ 	"strconv"
+ 	"strings"
+@@ -242,31 +243,67 @@
+ 	// (rather than the go tool process).
+ 	// This makes Kill work.
+ 
+-	bin := filepath.Join(tmpdir, "compile"+strconv.Itoa(<-uniq))
+-	src := bin + ".go"
+-	if runtime.GOOS == "windows" {
+-		bin += ".exe"
++	// Detect the snippet language (default to Go)
++	lang := "go"
++	erler := regexp.MustCompile("-module\\([a-z_]*\\).")
++	if erler.FindString(body) != "" {
++		lang = "erlang"
++	}
++	scaler := regexp.MustCompile("def main\\(")
++	if scaler.FindString(body) != "" {
++		lang = "scala"
+ 	}
+ 
+-	// write body to x.go
++	// Preprocess the source
++	id := "compile" + strconv.Itoa(<-uniq)
++	bin := filepath.Join(tmpdir, id)
++	src := bin
++	switch lang {
++	case "go":
++		src += ".go"
++		if runtime.GOOS == "windows" {
++			bin += ".exe"
++		}
++	case "erlang":
++		re := regexp.MustCompile("-module\\([a-z_]*\\).")
++		body = re.ReplaceAllString(body, "-module("+id+").")
++
++		src += ".erl"
++		bin += ".beam"
++	case "scala":
++		src += ".scala"
++		bin += ".bin.scala"
++	}
++
++	// Write body
+ 	defer os.Remove(src)
+ 	err := ioutil.WriteFile(src, []byte(body), 0666)
+ 	if err != nil {
+ 		return err
+ 	}
+ 
+-	// build x.go, creating x
++	// Build, creating x
+ 	p.bin = bin // to be removed by p.end
+ 	dir, file := filepath.Split(src)
+-	args := []string{"go", "build", "-tags", "OMIT"}
+-	if opt != nil && opt.Race {
+-		p.out <- &Message{
+-			Id: p.id, Kind: "stderr",
+-			Body: "Running with race detector.\n",
++
++	args := []string{}
++	switch lang {
++	case "go":
++		args = []string{"go", "build", "-tags", "OMIT"}
++		if opt != nil && opt.Race {
++			p.out <- &Message{
++				Id: p.id, Kind: "stderr",
++				Body: "Running with race detector.\n",
++			}
++			args = append(args, "-race")
+ 		}
+-		args = append(args, "-race")
++		args = append(args, "-o", bin, file)
++	case "erlang":
++		args = []string{"erlc", "-o", bin, file}
++
++	case "scala":
++		args = []string{"test", "true"}
+ 	}
+-	args = append(args, "-o", bin, file)
+ 	cmd := p.cmd(dir, args...)
+ 	cmd.Stdout = cmd.Stderr // send compiler output to stderr
+ 	if err := cmd.Run(); err != nil {
+@@ -274,16 +311,26 @@
+ 	}
+ 
+ 	// run x
+-	if isNacl() {
+-		cmd, err = p.naclCmd(bin)
+-		if err != nil {
+-			return err
++	switch lang {
++	case "go":
++		if isNacl() {
++			cmd, err = p.naclCmd(bin)
++			if err != nil {
++				return err
++			}
++		} else {
++			cmd = p.cmd("", bin)
+ 		}
+-	} else {
+-		cmd = p.cmd("", bin)
+-	}
+-	if opt != nil && opt.Race {
+-		cmd.Env = append(cmd.Env, "GOMAXPROCS=2")
++		if opt != nil && opt.Race {
++			cmd.Env = append(cmd.Env, "GOMAXPROCS=2")
++		}
++	case "erlang":
++		cmd = p.cmd(dir, "erl", "-noshell", "-s", id, "main", "-s", "erlang", "halt")
++
++	case "scala":
++		// Copy the source, we're going to run that
++		exec.Command("cp", src, bin).Run()
++		cmd = p.cmd("", "scala", "-cp", os.Getenv("SCALA_PATH"), bin)
+ 	}
+ 	if err := cmd.Start(); err != nil {
+ 		// If we failed to exec, that might be because they built
