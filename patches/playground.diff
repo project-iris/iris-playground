@@ -1,6 +1,6 @@
 diff -r 2f7aa2d4d377 playground/socket/socket.go
 --- a/playground/socket/socket.go	Fri Aug 01 15:04:49 2014 -0700
-+++ b/playground/socket/socket.go	Sun Sep 21 10:56:11 2014 +0300
++++ b/playground/socket/socket.go	Sun Sep 21 13:25:48 2014 +0300
 @@ -28,6 +28,7 @@
  	"os"
  	"os/exec"
@@ -9,7 +9,7 @@ diff -r 2f7aa2d4d377 playground/socket/socket.go
  	"runtime"
  	"strconv"
  	"strings"
-@@ -242,31 +243,67 @@
+@@ -242,48 +243,113 @@
  	// (rather than the go tool process).
  	// This makes Kill work.
  
@@ -19,17 +19,17 @@ diff -r 2f7aa2d4d377 playground/socket/socket.go
 -		bin += ".exe"
 +	// Detect the snippet language (default to Go)
 +	lang := "go"
-+	erler := regexp.MustCompile("-module\\([a-z_]*\\).")
-+	if erler.FindString(body) != "" {
++	switch {
++	case regexp.MustCompile("-module\\([a-z_]*\\).").FindString(body) != "":
 +		lang = "erlang"
-+	}
-+	scaler := regexp.MustCompile("def main\\(")
-+	if scaler.FindString(body) != "" {
++	case regexp.MustCompile("public static void main\\(").FindString(body) != "":
++		lang = "java"
++	case regexp.MustCompile("def main\\(").FindString(body) != "":
 +		lang = "scala"
  	}
  
 -	// write body to x.go
-+	// Preprocess the source
++	// Transform the source code if needed
 +	id := "compile" + strconv.Itoa(<-uniq)
 +	bin := filepath.Join(tmpdir, id)
 +	src := bin
@@ -45,6 +45,14 @@ diff -r 2f7aa2d4d377 playground/socket/socket.go
 +
 +		src += ".erl"
 +		bin += ".beam"
++	case "java":
++		re := regexp.MustCompile("public class ([A-Za-z_]+) ")
++		name := re.FindStringSubmatch(body)[1]
++		body = strings.Replace(body, name, id, -1)
++
++		src += ".java"
++		bin += "/"
++
 +	case "scala":
 +		src += ".scala"
 +		bin += ".bin.scala"
@@ -58,7 +66,7 @@ diff -r 2f7aa2d4d377 playground/socket/socket.go
  	}
  
 -	// build x.go, creating x
-+	// Build, creating x
++	// Compile the code, creating whatever binaries
  	p.bin = bin // to be removed by p.end
  	dir, file := filepath.Split(src)
 -	args := []string{"go", "build", "-tags", "OMIT"}
@@ -80,8 +88,15 @@ diff -r 2f7aa2d4d377 playground/socket/socket.go
  		}
 -		args = append(args, "-race")
 +		args = append(args, "-o", bin, file)
++
 +	case "erlang":
 +		args = []string{"erlc", "-o", bin, file}
++
++	case "java":
++		if err := os.Mkdir(bin, 0700); err != nil {
++			return err
++		}
++		args = []string{"javac", "-d", bin, "-cp", os.Getenv("CLASSPATH") + ":.", file}
 +
 +	case "scala":
 +		args = []string{"test", "true"}
@@ -90,14 +105,15 @@ diff -r 2f7aa2d4d377 playground/socket/socket.go
  	cmd := p.cmd(dir, args...)
  	cmd.Stdout = cmd.Stderr // send compiler output to stderr
  	if err := cmd.Run(); err != nil {
-@@ -274,16 +311,26 @@
+ 		return err
  	}
  
- 	// run x
+-	// run x
 -	if isNacl() {
 -		cmd, err = p.naclCmd(bin)
 -		if err != nil {
 -			return err
++	// Run the compiled binary or distribution
 +	switch lang {
 +	case "go":
 +		if isNacl() {
@@ -116,8 +132,12 @@ diff -r 2f7aa2d4d377 playground/socket/socket.go
 +		if opt != nil && opt.Race {
 +			cmd.Env = append(cmd.Env, "GOMAXPROCS=2")
 +		}
++
 +	case "erlang":
 +		cmd = p.cmd(dir, "erl", "-noshell", "-s", id, "main", "-s", "erlang", "halt")
++
++	case "java":
++		cmd = p.cmd(bin, "java", "-cp", os.Getenv("CLASSPATH")+":.", id)
 +
 +	case "scala":
 +		// Copy the source, we're going to run that
@@ -126,3 +146,12 @@ diff -r 2f7aa2d4d377 playground/socket/socket.go
  	}
  	if err := cmd.Start(); err != nil {
  		// If we failed to exec, that might be because they built
+@@ -309,7 +375,7 @@
+ // given error value. It also removes the binary.
+ func (p *process) end(err error) {
+ 	if p.bin != "" {
+-		defer os.Remove(p.bin)
++		defer os.RemoveAll(p.bin)
+ 	}
+ 	m := &Message{Id: p.id, Kind: "end"}
+ 	if err != nil {

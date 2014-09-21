@@ -82,6 +82,7 @@ RUN \
   mvn org.apache.maven.plugins:maven-dependency-plugin:2.8:copy \
     -Dartifact=com.karalabe.iris:iris:$JAR_VER                  \
     -DoutputDirectory=$CLASSPATH
+ENV CLASSPATH $CLASSPATH/*
 
 # Install and patch (multi-lang) the Go presentation tool
 ADD patches /patches
@@ -124,3 +125,6 @@ RUN \
   echo 'stderr_stream.filename = present.err.log'                          >> $CIRCUS_INI
 
 ENTRYPOINT ["circusd", "circus.ini"]
+
+# Inject the latest Iris snapshot
+ADD iris $IRIS
