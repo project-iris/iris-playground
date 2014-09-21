@@ -21,11 +21,8 @@ RUN \
   zypper --gpg-auto-import-keys --non-interactive ref                                                                && \
   zypper --non-interactive dup                                                                                       && \
   zypper --non-interactive install go erlang java-1_8_0-openjdk java-1_8_0-openjdk-devel maven python3 python3-devel    \
-    python3-pip libzmq3 zeromq-devel wget git mercurial                                                              && \
+    python3-pip libzmq3 zeromq-devel wget tar git mercurial                                                          && \
   pip install circus
-
-# Ensure git can cross over corporate firewalls
-RUN git config --global url."https://".insteadOf git://
 
 # Create a small script to download binaries and validate their checksum
 ENV FETCH ./fetch.sh
@@ -39,6 +36,21 @@ RUN \
   echo 'sha1sum -c $file.sum'         >> $FETCH && \
   echo 'rm $file.sum'                 >> $FETCH && \
   chmod +x $FETCH
+
+# Download and configure the Scala distribution
+ENV SCALA_HOME /usr/local/share/scala
+RUN \
+  export SCALA_VER=2.11.2                                                     && \
+  export SCALA_TAR=scala-$SCALA_VER.tgz                                       && \
+  export SCALA_SHA=904e9ee3bb96e8350b1e0f2502a704f836c0cdf1                   && \
+  $FETCH http://downloads.typesafe.com/scala/$SCALA_VER/$SCALA_TAR $SCALA_SHA && \
+  \
+  mkdir -p $SCALA_HOME                                             && \
+  tar -xvf $SCALA_TAR --directory $SCALA_HOME --strip-components=1
+ENV PATH $PATH:$SCALA_HOME/bin
+
+# Ensure git can cross over corporate firewalls
+RUN git config --global url."https://".insteadOf git://
 
 # Download the Iris node and allow execution
 ENV IRIS iris-v0.3.0-linux-amd64
