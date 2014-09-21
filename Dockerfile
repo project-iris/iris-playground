@@ -4,8 +4,24 @@
 # client libraries, and as such, the same licensing terms apply.
 # For details please see http://iris.karalabe.com/downloads#License
 
-# Build the container as: docker build -t <name> .
-# Run the container as:   docker run -it -p 3999:3999 <name>
+# Build the container as: docker build -t playground .
+# Run the container as:   docker run -d -p 3999:3999 playground // -rm would be nice, issue #6003
+#
+# Notes:
+#  - Disable IP forwarding to prevent malicious egress traffic
+#  - Add monitoring to automatically restart if container crashes
+#      crontab -l
+#      */1 * * * * /root/playground.sh
+#
+#      $ cat playground.sh
+#      # Check if no active playground container exists
+#      if [ "`docker ps | grep playground`" == "" ]; then
+#        # Clean up any previous leftovers
+#        docker rm -f $(docker ps -a -q)
+#
+#        # Start a fresh container
+#        docker run -d -p 3999:3999 playground
+#      fi
 
 FROM opensuse:13.1
 
@@ -134,7 +150,16 @@ RUN \
   echo 'stdout_stream.class    = FileStream'                               >> $CIRCUS_INI && \
   echo 'stdout_stream.filename = present.out.log'                          >> $CIRCUS_INI && \
   echo 'stderr_stream.class    = FileStream'                               >> $CIRCUS_INI && \
-  echo 'stderr_stream.filename = present.err.log'                          >> $CIRCUS_INI
+  echo 'stderr_stream.filename = present.err.log'                          >> $CIRCUS_INI && \
+  echo                                                                     >> $CIRCUS_INI && \
+  echo '[watcher:portal]'                                                  >> $CIRCUS_INI && \
+  echo 'cmd = go'                                                          >> $CIRCUS_INI && \
+  echo 'args = run /present/root/talks/binds/go.v1/src/portalhidden.go'    >> $CIRCUS_INI && \
+  echo 'copy_env = True'                                                   >> $CIRCUS_INI && \
+  echo 'stdout_stream.class    = FileStream'                               >> $CIRCUS_INI && \
+  echo 'stdout_stream.filename = portal.out.log'                           >> $CIRCUS_INI && \
+  echo 'stderr_stream.class    = FileStream'                               >> $CIRCUS_INI && \
+  echo 'stderr_stream.filename = portal.err.log'                           >> $CIRCUS_INI
 
 ENTRYPOINT ["circusd", "circus.ini"]
 
