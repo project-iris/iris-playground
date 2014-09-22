@@ -129,37 +129,37 @@ ADD binds /present/root/talks/binds
 # Configure the circus monitoring daemon
 ENV CIRCUS_INI circus.ini
 RUN \
-  echo '[circus]'                                                           > $CIRCUS_INI && \
-  echo 'statsd = 1'                                                        >> $CIRCUS_INI && \
-  echo                                                                     >> $CIRCUS_INI && \
-  echo '[watcher:iris]'                                                    >> $CIRCUS_INI && \
-  echo 'cmd = $(circus.env.IRIS)'                                          >> $CIRCUS_INI && \
-  echo 'args = -dev'                                                       >> $CIRCUS_INI && \
-  echo 'stdout_stream.class    = FileStream'                               >> $CIRCUS_INI && \
-  echo 'stdout_stream.filename = $(circus.env.IRIS).out.log'               >> $CIRCUS_INI && \
-  echo 'stderr_stream.class    = FileStream'                               >> $CIRCUS_INI && \
-  echo 'stderr_stream.filename = $(circus.env.IRIS).err.log'               >> $CIRCUS_INI && \
-  echo                                                                     >> $CIRCUS_INI && \
-  echo '[watcher:present]'                                                 >> $CIRCUS_INI && \
-  echo 'cmd = $(circus.env.GOPATH)/bin/present'                            >> $CIRCUS_INI && \
-  echo 'working_dir = /present/root'                                       >> $CIRCUS_INI && \
-  echo 'args = -base=/present/base -http=0.0.0.0:3999 -orighost=localhost' >> $CIRCUS_INI && \
-  echo 'uid = present'                                                     >> $CIRCUS_INI && \
-  echo 'gid = present'                                                     >> $CIRCUS_INI && \
-  echo 'copy_env = True'                                                   >> $CIRCUS_INI && \
-  echo 'stdout_stream.class    = FileStream'                               >> $CIRCUS_INI && \
-  echo 'stdout_stream.filename = present.out.log'                          >> $CIRCUS_INI && \
-  echo 'stderr_stream.class    = FileStream'                               >> $CIRCUS_INI && \
-  echo 'stderr_stream.filename = present.err.log'                          >> $CIRCUS_INI && \
-  echo                                                                     >> $CIRCUS_INI && \
-  echo '[watcher:portal]'                                                  >> $CIRCUS_INI && \
-  echo 'cmd = go'                                                          >> $CIRCUS_INI && \
-  echo 'args = run /present/root/talks/binds/go.v1/src/portalhidden.go'    >> $CIRCUS_INI && \
-  echo 'copy_env = True'                                                   >> $CIRCUS_INI && \
-  echo 'stdout_stream.class    = FileStream'                               >> $CIRCUS_INI && \
-  echo 'stdout_stream.filename = portal.out.log'                           >> $CIRCUS_INI && \
-  echo 'stderr_stream.class    = FileStream'                               >> $CIRCUS_INI && \
-  echo 'stderr_stream.filename = portal.err.log'                           >> $CIRCUS_INI
+  echo '[circus]'                                                                        > $CIRCUS_INI && \
+  echo 'statsd = 1'                                                                     >> $CIRCUS_INI && \
+  echo                                                                                  >> $CIRCUS_INI && \
+  echo '[watcher:iris]'                                                                 >> $CIRCUS_INI && \
+  echo 'cmd = $(circus.env.IRIS)'                                                       >> $CIRCUS_INI && \
+  echo 'args = -dev'                                                                    >> $CIRCUS_INI && \
+  echo 'stdout_stream.class    = FileStream'                                            >> $CIRCUS_INI && \
+  echo 'stdout_stream.filename = $(circus.env.IRIS).out.log'                            >> $CIRCUS_INI && \
+  echo 'stderr_stream.class    = FileStream'                                            >> $CIRCUS_INI && \
+  echo 'stderr_stream.filename = $(circus.env.IRIS).err.log'                            >> $CIRCUS_INI && \
+  echo                                                                                  >> $CIRCUS_INI && \
+  echo '[watcher:present]'                                                              >> $CIRCUS_INI && \
+  echo 'cmd = $(circus.env.GOPATH)/bin/present'                                         >> $CIRCUS_INI && \
+  echo 'working_dir = /present/root'                                                    >> $CIRCUS_INI && \
+  echo 'args = -base=/present/base -http=0.0.0.0:3999 -orighost=play.iris.karalabe.com' >> $CIRCUS_INI && \
+  echo 'uid = present'                                                                  >> $CIRCUS_INI && \
+  echo 'gid = present'                                                                  >> $CIRCUS_INI && \
+  echo 'copy_env = True'                                                                >> $CIRCUS_INI && \
+  echo 'stdout_stream.class    = FileStream'                                            >> $CIRCUS_INI && \
+  echo 'stdout_stream.filename = present.out.log'                                       >> $CIRCUS_INI && \
+  echo 'stderr_stream.class    = FileStream'                                            >> $CIRCUS_INI && \
+  echo 'stderr_stream.filename = present.err.log'                                       >> $CIRCUS_INI && \
+  echo                                                                                  >> $CIRCUS_INI && \
+  echo '[watcher:portal]'                                                               >> $CIRCUS_INI && \
+  echo 'cmd = go'                                                                       >> $CIRCUS_INI && \
+  echo 'args = run /present/root/talks/binds/go.v1/src/portalhidden.go'                 >> $CIRCUS_INI && \
+  echo 'copy_env = True'                                                                >> $CIRCUS_INI && \
+  echo 'stdout_stream.class    = FileStream'                                            >> $CIRCUS_INI && \
+  echo 'stdout_stream.filename = portal.out.log'                                        >> $CIRCUS_INI && \
+  echo 'stderr_stream.class    = FileStream'                                            >> $CIRCUS_INI && \
+  echo 'stderr_stream.filename = portal.err.log'                                        >> $CIRCUS_INI
 
 ENTRYPOINT ["circusd", "circus.ini"]
 
