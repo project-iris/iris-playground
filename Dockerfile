@@ -4,8 +4,9 @@
 # client libraries, and as such, the same licensing terms apply.
 # For details please see http://iris.karalabe.com/downloads#License
 
-# Build the container as: docker build -t playground .
-# Run the container as:   docker run -d -p 3999:3999 playground // -rm would be nice, issue #6003
+# Build the container as:     docker build -t playground .
+# Run the container as:       docker run -d -p 3999:3999 playground
+# optionally override origin: docker run -d -p 3999:3999 -e "ORIGHOST=play.iris.karalabe.com" playground
 #
 # Notes:
 #  - Disable IP forwarding to prevent malicious egress traffic
@@ -127,6 +128,7 @@ ADD base  /present/base
 ADD binds /present/root/talks/binds
 
 # Configure the circus monitoring daemon
+ENV ORIGHOST play.iris.karalabe.com
 ENV CIRCUS_INI circus.ini
 RUN \
   echo '[circus]'                                                                        > $CIRCUS_INI && \
@@ -143,7 +145,7 @@ RUN \
   echo '[watcher:present]'                                                              >> $CIRCUS_INI && \
   echo 'cmd = $(circus.env.GOPATH)/bin/present'                                         >> $CIRCUS_INI && \
   echo 'working_dir = /present/root'                                                    >> $CIRCUS_INI && \
-  echo 'args = -base=/present/base -http=0.0.0.0:3999 -orighost=play.iris.karalabe.com' >> $CIRCUS_INI && \
+  echo 'args = -base=/present/base -http=0.0.0.0:3999 -orighost=$(circus.env.ORIGHOST)' >> $CIRCUS_INI && \
   echo 'uid = present'                                                                  >> $CIRCUS_INI && \
   echo 'gid = present'                                                                  >> $CIRCUS_INI && \
   echo 'copy_env = True'                                                                >> $CIRCUS_INI && \
