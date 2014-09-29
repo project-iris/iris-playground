@@ -69,9 +69,9 @@ ENV PATH $PATH:$SCALA_HOME/bin
 RUN git config --global url."https://".insteadOf git://
 
 # Download the Iris node and allow execution
-ENV IRIS iris-v0.3.0-linux-amd64
+ENV IRIS iris-v0.3.1-linux-amd64
 RUN \
-  $FETCH http://iris.karalabe.com/downloads/$IRIS 49a81587d56d97282da1af796aa49e0fa115754a && \
+  $FETCH http://iris.karalabe.com/downloads/$IRIS 1385c444748d7e5b135cc23626c669b26e87f867 && \
   chmod +x $IRIS
 
 # Download and install the Go binding
@@ -97,7 +97,7 @@ RUN \
 # Download and install the Java bindings
 ENV CLASSPATH /binds/java
 RUN \
-  export JAR_VER=1.0.0-preview-5 && \
+  export JAR_VER=1.0.0-preview-6 && \
   mkdir -p $CLASSPATH            && \
   cd $CLASSPATH                  && \
   \
@@ -162,6 +162,3 @@ RUN \
   echo 'stderr_stream.filename = portal.err.log'                                        >> $CIRCUS_INI
 
 ENTRYPOINT ["circusd", "circus.ini"]
-
-# Inject the latest Iris snapshot
-ADD iris $IRIS
