@@ -31,25 +31,23 @@ var wishes = []string{
 	"We've both said things you're going to\nregret.",
 }
 
-// START OMIT
-
 func main() {
-	// Connect to the Iris network as GLaDOS
-	conn, err := iris.Connect(55555) // HLpub
-	if err != nil {
-		panic(err)
-	}
-	defer conn.Close()
-
-	// Publish the nice wishes on an Iris topic
-	fmt.Println("GLaDOS is online, sending wishes...")
-	for {
-		// Pick a random wish
-		idx := rand.Intn(len(wishes))
-
-		conn.Publish("official", []byte("GLaDOS: "+wishes[idx])) // HLpub
-		time.Sleep(5 * time.Second)
-	}
+// START OMIT
+// Connect to the Iris network as GLaDOS
+conn, err := iris.Connect(55555) // HLpub
+if err != nil {
+	panic(err)
 }
+defer conn.Close()
 
+// Publish the nice wishes on an Iris topic
+fmt.Println("GLaDOS is online, sending wishes...")
+for {
+	// Pick a random wish
+	idx := rand.Intn(len(wishes))
+
+	conn.Publish("official", []byte("GLaDOS: "+wishes[idx])) // HLpub
+	time.Sleep(5 * time.Second)
+}
 // END OMIT
+}

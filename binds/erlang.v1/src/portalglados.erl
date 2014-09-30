@@ -21,21 +21,21 @@ wishes() -> [
 count() ->
     length(wishes()) - 1.
 
-%% START OMIT
 main() ->
-    % Connect to the Iris network as GLaDOS
-    {ok, Client} = iris_client:start(55555), // HLpub
+%% START OMIT
+% Connect to the Iris network as GLaDOS
+{ok, Client} = iris_client:start(55555), // HLpub
 
-    % Publish the nice wishes on an Iris topic
-    io:format("GLaDOS is online, sending wishes...~n"),
+% Publish the nice wishes on an Iris topic
+io:format("GLaDOS is online, sending wishes...~n"),
 
-    lists:foreach(fun(_) ->
-        % Pick a random wish
-        Wish = lists:nth(random:uniform(count()), wishes()),
+lists:foreach(fun(_) ->
+    % Pick a random wish
+    Wish = lists:nth(random:uniform(count()), wishes()),
 
-        ok = iris_client:publish(Client, "official", <<"GLaDOS: ", Wish/binary>>), // HLpub
-        timer:sleep(5000)
-    end, lists:seq(1, 100)),
+    ok = iris_client:publish(Client, "official", <<"GLaDOS: ", Wish/binary>>), // HLpub
+    timer:sleep(5000)
+end, lists:seq(1, 100)),
 
-    ok = iris_client:stop(Client).
+ok = iris_client:stop(Client).
 %% END OMIT
