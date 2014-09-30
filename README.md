@@ -15,14 +15,14 @@ As the playground is based on Docker containers, it requires only a working Dock
 The easiest way of assembling the playground is simply downloading the trusted build from the docker image registry (**large**):
 
 ```bash
-$ docker pull project-iris/playground
+$ docker pull iris/playground
 ```
 
 However, if you prefer building the playground locally, simply pull the repository and issue a Docker build:
 
 ```bash
 $ git pull https://github.com/project-iris/iris-playground.git
-$ docker build -t project-iris/playground ./iris-playground
+$ docker build -t iris/playground ./iris-playground
 ```
 
 ### Running the playground
@@ -30,7 +30,7 @@ $ docker build -t project-iris/playground ./iris-playground
 After downloading or assembling the container, it can be started with:
 
 ```bash
-$ docker run -d -p 3999:3999 -e "ORIGHOST=localhost" project-iris/playground
+$ docker run -d -p 3999:3999 -e "ORIGHOST=localhost" iris/playground
 ```
 
 Details of the above command:
