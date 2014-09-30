@@ -4,10 +4,6 @@
 # client libraries, and as such, the same licensing terms apply.
 # For details please see http://iris.karalabe.com/downloads#License
 
-# Build the container as:     docker build -t playground .
-# Run the container as:       docker run -d -p 3999:3999 playground
-# optionally override origin: docker run -d -p 3999:3999 -e "ORIGHOST=play.iris.karalabe.com" playground
-#
 # Notes:
 #  - Disable IP forwarding to prevent malicious egress traffic
 #  - Add monitoring to automatically restart if container crashes
@@ -16,12 +12,12 @@
 #
 #      $ cat playground.sh
 #      # Check if no active playground container exists
-#      if [ "`docker ps | grep playground`" == "" ]; then
+#      if [ "`docker ps | grep iris/playground`" == "" ]; then
 #        # Clean up any previous leftovers
 #        docker rm -f $(docker ps -a -q)
 #
 #        # Start a fresh container
-#        docker run -d -p 3999:3999 playground
+#        docker run -d -p 3999:3999 iris/playground
 #      fi
 
 FROM opensuse:13.1
