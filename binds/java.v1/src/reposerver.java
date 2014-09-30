@@ -28,7 +28,7 @@ public class RepoServerEntry implements ServiceHandler {
 
         // Simulate sending some multi-part data stream
         for (int i = 0; i < 10; i++) {
-            String part = ("Repo #" + id + ": <" + name + "> part #" + i + 1);
+            String part = ("Repo #" + id + ": <" + name + "> part #" + (i+1));
             tunnel.send(part.getBytes(), 1000); // HLtunnel
         }
     } catch (IOException | TimeoutException | ClosedException e) {
