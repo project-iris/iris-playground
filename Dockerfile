@@ -150,6 +150,9 @@ RUN \
   echo 'stderr_stream.class    = FileStream'                                            >> $CIRCUS_INI && \
   echo 'stderr_stream.filename = present.err.log'                                       >> $CIRCUS_INI && \
   echo                                                                                  >> $CIRCUS_INI && \
+  echo '[env:present]'                                                                  >> $CIRCUS_INI && \
+  echo 'HOME=/'                                                                         >> $CIRCUS_INI && \
+  echo                                                                                  >> $CIRCUS_INI && \
   echo '[watcher:portal]'                                                               >> $CIRCUS_INI && \
   echo 'cmd = go'                                                                       >> $CIRCUS_INI && \
   echo 'args = run /present/root/talks/binds/go.v1/src/portalhidden.go'                 >> $CIRCUS_INI && \
