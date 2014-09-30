@@ -94,7 +94,7 @@ RUN \
 # Download and install the Java bindings
 ENV CLASSPATH /binds/java
 RUN \
-  export JAR_VER=1.0.0-preview-6 && \
+  export JAR_VER=1.0.0-preview-7 && \
   mkdir -p $CLASSPATH            && \
   cd $CLASSPATH                  && \
   \
