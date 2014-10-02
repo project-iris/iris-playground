@@ -10,21 +10,20 @@ object PortalChellEntry {
     def main(args: Array[String]) {
 // START OMIT
 // Topic subscription handler processing inbound events
-class ChellTuner extends TopicHandler {
+class Chell extends TopicHandler {
     override def handleEvent(event: Array[Byte]) { // HLsub
         System.out.println(new String(event) + "\n")
     }
 }
 // Connect to the Iris network as Chell
-val conn = new Connection(55555) // HLsub
+val connection = new Connection(55555) // HLsub
 try {
-    // Subscribe to some interesting Iris topics
     System.out.println("Tuning in to Aperture channels...");
+    connection.subscribe("official", new Chell) // HLsub
 
-    conn.subscribe("official", new ChellTuner) // HLsub
-    Thread.sleep(60000)
+    Thread.sleep(60 * 1000)
 } finally {
-    conn.close()
+    connection.close()
 }
 // END OMIT
     }

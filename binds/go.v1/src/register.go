@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"gopkg.in/inconshreveable/log15.v2"
@@ -14,24 +14,24 @@ func init() {
 
 // START OMIT
 // Callback handler for inbound events
-type handler struct{}
+type servicedemo struct{}
 
 // Handler initialization, invoked after successful registration
-func (h *handler) Init(conn *iris.Connection) error { return nil } // HLreg
+func (s *servicedemo) Init(conn *iris.Connection) error { return nil } // HLreg
 
 func main() {
-	// Register a micro-service instance into the Iris network
-	serv, err := iris.Register(55555, "Gopher Service", new(handler), nil) // HLreg
+	// Register a micro-service instance into the network
+	service, err := iris.Register(55555, "Gopher Service", new(servicedemo), nil) // HLreg
 	if err != nil {
-		log.Fatalf("Failed to register service: %v.", err)
+		fmt.Println("Failed to register service:", err); return
 	}
-	defer serv.Unregister() // HLreg
+	defer service.Unregister() // HLreg
 }
 
 // Remaining callbacks methods, not used in this demo
-func (h *handler) HandleBroadcast(msg []byte)               { panic("Not implemented!") }
-func (h *handler) HandleRequest(msg []byte) ([]byte, error) { panic("Not implemented!") }
-func (h *handler) HandleTunnel(tunn *iris.Tunnel)           { panic("Not implemented!") }
-func (h *handler) HandleDrop(reason error)                  { panic("Not implemented!") }
+func (s *servicedemo) HandleBroadcast(msg []byte)               { panic("Not implemented!") }
+func (s *servicedemo) HandleRequest(msg []byte) ([]byte, error) { panic("Not implemented!") }
+func (s *servicedemo) HandleTunnel(tunn *iris.Tunnel)           { panic("Not implemented!") }
+func (s *servicedemo) HandleDrop(reason error)                  { panic("Not implemented!") }
 
 // END OMIT

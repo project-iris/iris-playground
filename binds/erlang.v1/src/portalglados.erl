@@ -26,7 +26,6 @@ main() ->
 % Connect to the Iris network as GLaDOS
 {ok, Client} = iris_client:start(55555), // HLpub
 
-% Publish the nice wishes on an Iris topic
 io:format("GLaDOS is online, sending wishes...~n"),
 
 lists:foreach(fun(_) ->

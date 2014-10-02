@@ -26,11 +26,10 @@ class WebServer implements ServiceHandler {
     }
 }
 
-// Register a new webserver into the Iris network
+// Register a webserver micro-service into the network
 try (Service service = new Service(55555, "webserver", new WebServer())) { // HLreq
-    // Serve a while, then quit
-    System.out.println("Waiting for requests...");
-    Thread.sleep(100_000);
+    System.out.println("Waiting for inbound requests...");
+    Thread.sleep(60 * 1000);
 }
 // END OMIT
     }

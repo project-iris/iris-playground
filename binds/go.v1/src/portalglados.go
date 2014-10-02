@@ -34,19 +34,18 @@ var wishes = []string{
 func main() {
 // START OMIT
 // Connect to the Iris network as GLaDOS
-conn, err := iris.Connect(55555) // HLpub
+connection, err := iris.Connect(55555) // HLpub
 if err != nil {
-	panic(err)
+	fmt.Println("Failed to connect:", err); return
 }
-defer conn.Close()
+defer connection.Close()
 
-// Publish the nice wishes on an Iris topic
 fmt.Println("GLaDOS is online, sending wishes...")
 for {
-	// Pick a random wish
-	idx := rand.Intn(len(wishes))
+	// Pick a random wish from hidden 'wishes' array
+	wish := wishes[rand.Intn(len(wishes))]
 
-	conn.Publish("official", []byte("GLaDOS: "+wishes[idx])) // HLpub
+	connection.Publish("official", []byte("GLaDOS: " + wish)) // HLpub
 	time.Sleep(5 * time.Second)
 }
 // END OMIT

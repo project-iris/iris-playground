@@ -11,14 +11,14 @@ public class WebBrowser {
         logger.detachAndStopAllAppenders();
 
 // START OMIT
-// Connect to the Iris network as a simple client
-try (Connection conn = new Connection(55555)) { // HLreq
+// Connect to the network as a simple client
+try (Connection connection = new Connection(55555)) { // HLreq
     // Issue a dummy request every second
-    for (int i = 0; i < 100; i++) {
+    for (int i = 1; i <= 60; i++) {
         byte[] request = ("Request #" + i).getBytes();
 
         try {
-            byte[] reply = conn.request("webserver", request, 1000); // HLreq
+            byte[] reply = connection.request("webserver", request, 1000); // HLreq
             System.out.println("Web reply: " + new String(reply));
         } catch (Exception e) {
             System.out.println("Request failed: " + e.getMessage());

@@ -14,33 +14,32 @@ func init() {
 	iris.Log.SetHandler(log15.DiscardHandler())
 }
 
-type server struct {
+type webserver struct {
 	id int
 }
 
-func (s *server) Init(conn *iris.Connection) error { return nil }
-func (s *server) HandleBroadcast(msg []byte)       { panic("Not implemented!") }
-func (s *server) HandleTunnel(tunn *iris.Tunnel)   { panic("Not implemented!") }
-func (s *server) HandleDrop(reason error)          { panic("Not implemented!") }
+func (w *webserver) Init(conn *iris.Connection) error { return nil }
+func (w *webserver) HandleBroadcast(msg []byte)       { panic("Not implemented!") }
+func (w *webserver) HandleTunnel(tunn *iris.Tunnel)   { panic("Not implemented!") }
+func (w *webserver) HandleDrop(reason error)          { panic("Not implemented!") }
 
 // START OMIT
 
 // Format each request a bit and return as the reply
-func (s *server) HandleRequest(req []byte) ([]byte, error) { // HLreq
-	return []byte(fmt.Sprint("go-www-", s.id, ": ", string(req))), nil
+func (w *webserver) HandleRequest(request []byte) ([]byte, error) { // HLreq
+	return []byte(fmt.Sprint("go-www-", w.id, ": ", string(request))), nil
 }
 
 func main() {
-	// Register a new webserver into the Iris network
-	serv, err := iris.Register(55555, "webserver", &server{id: rand.Intn(100)}, nil) // HLreq
+	// Register a webserver micro-service into the network
+	service, err := iris.Register(55555, "webserver", &webserver{id: rand.Intn(100)}, nil) // HLreq
 	if err != nil {
-		panic(err)
+		fmt.Println("Failed to register micro-service:", err); return
 	}
-	defer serv.Unregister()
+	defer service.Unregister() // HLreq
 
-	// Serve a while, then quit
-	fmt.Println("Waiting for requests...")
-	time.Sleep(100 * time.Second)
+	fmt.Println("Waiting for inbound requests...")
+	time.Sleep(60 * time.Second)
 }
 
 // END OMIT

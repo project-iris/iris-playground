@@ -20,14 +20,13 @@ main() ->
     random:seed(erlang:now()),
     Id = list_to_binary(io_lib:format("erl-www-~p", [random:uniform(100)])),
 
-    % Register a new webserver into the Iris network
+    % Register a webserver micro-service into the network
     {ok, Server} = iris_server:start(55555, "webserver", ?MODULE, Id), // HLreq
 
-    % Serve a while, then quit
-    io:format("Waiting for requests..."),
-    timer:sleep(100 * 1000),
+    io:format("Waiting for inbound requests..."),
+    timer:sleep(60 * 1000),
 
-    ok = iris_server:stop(Server).
+    ok = iris_server:stop(Server). // HLreq
 %% END OMIT
 
 % Remaining callbacks methods, not used in this demo

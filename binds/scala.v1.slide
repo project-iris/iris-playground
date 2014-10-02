@@ -1,5 +1,5 @@
 Iris through Scala... API v1
-High performance decentralized cloud messaging
+Bringing simplicity back to distributed services
 
 Péter Szilágyi
 
@@ -113,7 +113,7 @@ _Note:_Connecting_as_a_simple_client_is_ [[http://iris.karalabe.com/docs/iris-jv
 
   override def ServiceHandler::init(connection: Connection): Unit
 - Called once after the service is registered into the Iris network
-- May initialize any internal state dependent on the live connection
+- May initialize any internal state dependent on the live _connection_
 
 * Challenge #1 – Web requests
 
@@ -142,7 +142,7 @@ _The_presentation_supports_only_one_active_demo_process_per_window._ [[scala.v1.
 .html scala.v1/ref/connection_request.html
 
 	Connection::request(cluster: String, request: Array[Byte], timeout: long): Array[Byte]
-- Issues a synchronous request to member of _cluster_
+- Issues a synchronous _request_ to member of _cluster_
 - Requests are load balanced between all members of _cluster_
 
 .image scala.v1/whitespace.png 0 0
@@ -150,7 +150,7 @@ _The_presentation_supports_only_one_active_demo_process_per_window._ [[scala.v1.
 .html scala.v1/ref/servicehandler_handlerequest.html
 
 	override def ServiceHandler::handleRequest(request: Array[Byte]): Array[Byte]
-- Invoked when a request arrives to the local service
+- Invoked when a _request_ arrives to the local service
 - Result (reply or exception) is forwarded back to the caller
 - Concurrency is as defined by the limits during registration
 
@@ -193,13 +193,13 @@ _Hint:_Maybe_there_is_an_"unofficial"_channel?_ 😉
 .html scala.v1/ref/connection_publish.html
 
 	Connection::publish(topic: String, event: Array[Byte]): Unit
-- Publishes an event asynchronously to _topic_
+- Publishes an _event_ asynchronously to _topic_
 
 .html scala.v1/embed/scheme_pubsub.html
 .html scala.v1/ref/topichandler_handleevent.html
 
 	override def TopicHandler::handleEvent(event: Array[Byte]): Unit
-- Invoked when an event arrives to the subscribed topic
+- Invoked when an _event_ arrives to the subscribed topic
 
 * Challenge #3 – Data repository
 
@@ -241,8 +241,8 @@ _The_presentation_supports_only_one_active_demo_process_per_window._ [[scala.v1.
 .html scala.v1/ref/tunnel_send.html
 
 	Tunnel::send(message: Array[Byte], timeout: long): Unit
-- Sends a message over the tunnel to the remote pair
-- Partial sends (timeout) are discarded remotely
+- Sends a _message_ over the tunnel to the remote pair
+- Partial sends (_timeout_) are discarded remotely
 
 .html scala.v1/embed/scheme_tunnel.html
 .html scala.v1/ref/tunnel_receive.html

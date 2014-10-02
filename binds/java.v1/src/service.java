@@ -13,7 +13,7 @@ public class ServiceDemo implements ServiceHandler {
     @Override public void init(Connection connection) throws InitializationException { } // HLreg
 
     public static void main(String args[]) {
-        // Register a micro-service instance into the Iris network
+        // Register a micro-service instance into the network
         try (Service service = new Service(55555, "Javatar service", new ServiceDemo())) { // HLreg
             // Do something, before tearing down
         }

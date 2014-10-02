@@ -15,22 +15,24 @@ func init() {
 func main() {
 	// START OMIT
 
-// Connect to the Iris network as a simple client
-conn, err := iris.Connect(55555) // HLreq
+// Connect to the network as a simple client
+connection, err := iris.Connect(55555) // HLreq
 if err != nil {
-	panic(err)
+	fmt.Println("Failed to connect:", err); return
 }
-defer conn.Close() // HLreq
+defer connection.Close() // HLreq
 
 // Issue a dummy request every second
-for i := 1; i <= 100; i++ {
-	rep, err := conn.Request("webserver", []byte(fmt.Sprint("Request #", i)), time.Second) // HLreq
+for i := 1; i <= 60; i++ {
+	request := []byte(fmt.Sprint("Request #", i))
+
+	reply, err := connection.Request("webserver", request, time.Second) // HLreq
 	if err != nil {
 		fmt.Println("Request failed:", err)
 	} else {
-		fmt.Println("Web reply: ", string(rep))
+		fmt.Println("Web reply:", string(reply))
 	}
 	time.Sleep(time.Second)
 }
-	// END OMIT
+// END OMIT
 }

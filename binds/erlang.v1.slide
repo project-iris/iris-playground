@@ -1,5 +1,5 @@
 Iris through Erlang... API v1
-Taking gen_server to the next level
+Bringing simplicity back to distributed services
 
 Péter Szilágyi
 
@@ -112,7 +112,7 @@ _Note:_Connecting_as_a_simple_client_is_ [[http://iris.karalabe.com/docs/iris-er
 
   Module:init(Client :: iris:client(), Args :: term()) → {ok, State :: term()}
 - Called once after the service is registered into the Iris network
-- May initialize state dependent on the live connection or user _Args_
+- May initialize state dependent on the live _Client_ connection and _Args_
 
 .image erlang.v1/whitespace.png 0 0
 
@@ -153,8 +153,8 @@ _The_presentation_supports_only_one_active_demo_process_per_window._ [[erlang.v1
 .html erlang.v1/ref/iris_server_module_handle_request.html
 
   Module:handle_request(Request :: binary(), State :: term()) → {reply, Response, State}
-- Invoked when a request arrives to the local service
-- Response (reply or error) is forwarded back to the caller
+- Invoked when a _Request_ arrives to the local service
+- _Response_ (reply or error) is forwarded back to the caller
 - _Module_ is the callback handler specified during _iris__server:start_
 
 .html erlang.v1/embed/scheme_reqrep.html
@@ -196,13 +196,13 @@ _Hint:_Maybe_there_is_an_"unofficial"_channel?_ 😉
 .html erlang.v1/ref/iris_client_publish.html
 
 	iris_client:publish(Client, Topic :: string(), Event :: binary())
-- Publishes an event asynchronously to _Topic_
+- Publishes an _Event_ asynchronously to _Topic_
 
 .html erlang.v1/embed/scheme_pubsub.html
 .html erlang.v1/ref/iris_topic_module_handle_event.html
 
 	Module:handle_event(Event :: binary(), State :: term()) → {noreply, State}
-- Invoked when an event arrives to the subscribed topic
+- Invoked when an _Event_ arrives to the subscribed topic
 - _Module_ is the callback handler specified during subscription
 
 * Challenge #3 – Data repository
@@ -244,8 +244,8 @@ _The_presentation_supports_only_one_active_demo_process_per_window._ [[erlang.v1
 .html erlang.v1/ref/iris_tunnel_send.html
 
   iris_tunnel:send(Tunnel, Message :: binary, Timeout :: int())
-- Sends a message over the tunnel to the remote pair
-- Partial sends (timeout) are discarded remotely
+- Sends a _Message_ over the tunnel to the remote pair
+- Partial sends (_Timeout_) are discarded remotely
 
 .html erlang.v1/embed/scheme_tunnel.html
 .html erlang.v1/ref/iris_tunnel_recv.html

@@ -29,20 +29,19 @@ object PortalGlados {
     def main(args: Array[String]) {
 // START OMIT
 // Connect to the Iris network as GLaDOS
-val conn = new Connection(55555) // HLpub
+val connection = new Connection(55555) // HLpub
 try {
-    // Publish the nice wishes on an Iris topic
-    System.out.println("GLaDOS is online, sending wishes...");
+    System.out.println("GLaDOS is online, sending wishes...")
 
     while (true) {
-        // Pick a random wish
-        val idx = new Random().nextInt(wishes.length)
+        // Pick a random wish from hidden 'wishes' array
+        val wish = wishes(new Random().nextInt(wishes.length))
 
-        conn.publish("official", ("GLaDOS: " + wishes(idx)).getBytes) // HLpub
+        connection.publish("official", ("GLaDOS: " + wish).getBytes) // HLpub
         Thread.sleep(5000)
     }
 } finally {
-    conn.close()
+    connection.close()
 }
 // END OMIT
     }

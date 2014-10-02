@@ -11,7 +11,7 @@ init(_Conn, your_init_args) -> {ok, your_state}. // HLbeh
 terminate(_Reason, _State)  -> ok.               // HLbeh
 
 main() ->
-    % Register a micro-service instance into the Iris network
+    % Register a micro-service instance into the network
     {ok, Server} = iris_server:start(55555, "Erlang Service", ?MODULE, your_init_args), // HLbeh
 
     % Unregister the service

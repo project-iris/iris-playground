@@ -21,18 +21,17 @@ class WebServer extends ServiceHandler {
 
     // Format each request a bit and return as the reply
     override def handleRequest(request: Array[Byte]): Array[Byte] = { // HLreq
-        return (s"java-www-$id: ${new String(request)}").getBytes
+        return (s"scala-www-$id: ${new String(request)}").getBytes
     }
 }
 
-// Register a new webserver into the Iris network
+// Register a webserver micro-service into the network
 val service = new Service(55555, "webserver", new WebServer) // HLreq
 try {
-    // Serve a while, then quit
-    System.out.println("Waiting for requests...")
-    Thread.sleep(100000)
+    System.out.println("Waiting for inbound requests...")
+    Thread.sleep(60 * 1000)
 } finally {
-    service.close
+    service.close() // HLreq
 }
 // END OMIT
     }

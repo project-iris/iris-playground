@@ -113,7 +113,7 @@ _Note:_Connecting_as_a_simple_client_is_ [[http://godoc.org/gopkg.in/project-iri
 
   func (iris.ServiceHandler) Init (connection *iris.Connection)
 - Called once after the service is registered into the Iris network
-- May initialize any internal state dependent on the live connection
+- May initialize any internal state dependent on the live _connection_
 
 * Challenge #1 – Web requests
 
@@ -142,7 +142,7 @@ _The_presentation_supports_only_one_active_demo_process_per_window._ [[go.v1.sli
 .html go.v1/ref/connection_request.html
 
 	func (iris.Connection) Request(cluster string, request []byte, timeout time.Duration) → []byte
-- Issues a synchronous request to member of _cluster_
+- Issues a synchronous _request_ to member of _cluster_
 - Requests are load balanced between all members of _cluster_
 
 .image go.v1/whitespace.png 0 0
@@ -150,8 +150,8 @@ _The_presentation_supports_only_one_active_demo_process_per_window._ [[go.v1.sli
 .html go.v1/ref/servicehandler_handlerequest.html
 
 	func (iris.ServiceHandler) HandleRequest(request []byte) → []byte
-- Invoked when a request arrives to the local service
-- Result (reply or error) is forwarded back to the caller
+- Invoked when a _request_ arrives to the local service
+- Response (reply or error) is forwarded back to the caller
 - Concurrency is as defined by the limits during registration
 
 .html go.v1/embed/scheme_reqrep.html
@@ -186,20 +186,21 @@ _Hint:_Maybe_there_is_an_"unofficial"_channel?_ 😉
 	func (iris.Connection) Subscribe(topic string, handler TopicHandler, limits TopicLimits)
 - Subscribes the connection to events on _topic_
 - Assigns _handler_ as the event callback for _topic_
+- Limits configurable with the _limits_ parameter
 
 .image go.v1/whitespace.png 0 0
 
 .html go.v1/ref/connection_publish.html
 
 	func (iris.Connection) Publish(topic string, event []byte)
-- Publishes an event asynchronously to _topic_
+- Publishes an _event_ asynchronously to _topic_
 
+.html go.v1/embed/scheme_pubsub.html
 .html go.v1/ref/topichandler_handleevent.html
 
 	func (iris.TopicHandler) HandleEvent(event []byte)
-- Invoked when an event arrives to the subscribed topic
+- Invoked when an _event_ arrives to the subscribed topic
 
-.html go.v1/embed/scheme_pubsub.html
 
 * Challenge #3 – Data repository
 
@@ -241,8 +242,8 @@ _The_presentation_supports_only_one_active_demo_process_per_window._ [[go.v1.sli
 .html go.v1/ref/tunnel_send.html
 
 	func (iris.Tunnel) Send(message []byte, timeout time.Duration)
-- Sends a message over the tunnel to the remote pair
-- Partial sends (timeout) are discarded remotely
+- Sends a _message_ over the tunnel to the remote pair
+- Partial sends (_timeout_) are discarded remotely
 
 .html go.v1/embed/scheme_tunnel.html
 .html go.v1/ref/tunnel_recv.html

@@ -24,7 +24,7 @@ func main() {
 // Open an outbound tunnel to a data store
 tunnel, err := connection.Tunnel("repository", time.Second) // HLtunnel
 if err != nil {
-	fmt.Printf("Tunneling failed: %v", err); return
+	fmt.Println("Tunneling failed:", err); return
 }
 defer tunnel.Close() // HLtunnel
 

@@ -1,5 +1,5 @@
 Iris through Java... API v1
-Enterprise messaging, the way it should have been
+Bringing simplicity back to distributed services
 
 Péter Szilágyi
 
@@ -113,7 +113,7 @@ _Note:_Connecting_as_a_simple_client_is_ [[http://iris.karalabe.com/docs/iris-jv
 
   @Override void ServiceHandler::init(Connection connection)
 - Called once after the service is registered into the Iris network
-- May initialize any internal state dependent on the live connection
+- May initialize any internal state dependent on the live _connection_
 
 * Challenge #1 – Web requests
 
@@ -142,7 +142,7 @@ _The_presentation_supports_only_one_active_demo_process_per_window._ [[java.v1.s
 .html java.v1/ref/connection_request.html
 
 	byte[] Connection::request(String cluster, byte[] request, long timeout)
-- Issues a synchronous request to member of _cluster_
+- Issues a synchronous _request_ to member of _cluster_
 - Requests are load balanced between all members of _cluster_
 
 .image java.v1/whitespace.png 0 0
@@ -150,7 +150,7 @@ _The_presentation_supports_only_one_active_demo_process_per_window._ [[java.v1.s
 .html java.v1/ref/servicehandler_handlerequest.html
 
 	@Override byte[] ServiceHandler::handleRequest(byte[] request)
-- Invoked when a request arrives to the local service
+- Invoked when a _request_ arrives to the local service
 - Result (reply or exception) is forwarded back to the caller
 - Concurrency is as defined by the limits during registration
 
@@ -197,13 +197,13 @@ _Hint:_Maybe_there_is_an_"unofficial"_channel?_ 😉
 .html java.v1/ref/connection_publish.html
 
 	void Connection::publish(String topic, byte[] event)
-- Publishes an event asynchronously to _topic_
+- Publishes an _event_ asynchronously to _topic_
 
 .html java.v1/embed/scheme_pubsub.html
 .html java.v1/ref/topichandler_handleevent.html
 
 	@Override void TopicHandler::handleEvent(byte[] event)
-- Invoked when an event arrives to the subscribed topic
+- Invoked when an _event_ arrives to the subscribed topic
 
 * Challenge #3 – Data repository
 
@@ -243,8 +243,8 @@ _The_presentation_supports_only_one_active_demo_process_per_window._ [[java.v1.s
 .html java.v1/ref/tunnel_send.html
 
 	void Tunnel::send(byte[] message, long timeout)
-- Sends a message over the tunnel to the remote pair
-- Partial sends (timeout) are discarded remotely
+- Sends a _message_ over the tunnel to the remote pair
+- Partial sends (_timeout_) are discarded remotely
 
 .html java.v1/embed/scheme_tunnel.html
 .html java.v1/ref/tunnel_receive.html

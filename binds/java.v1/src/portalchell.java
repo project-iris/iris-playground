@@ -15,18 +15,18 @@ public class PortalChellEntry implements ServiceHandler {
         logger.detachAndStopAllAppenders();
 
 // START OMIT
-class ChellTuner implements TopicHandler {
+// Topic subscription handler processing inbound events
+class Chell implements TopicHandler {
     @Override public void handleEvent(byte[] event) { // HLsub
         System.out.println(new String(event) + "\n");
     }
 }
 // Connect to the Iris network as Chell
-try (Connection conn = new Connection(55555)) { // HLsub
-    // Subscribe to some interesting Iris topics
+try (Connection connection = new Connection(55555)) { // HLsub
     System.out.println("Tuning in to Aperture channels...");
+    connection.subscribe("official", new Chell()); // HLsub
 
-    conn.subscribe("official", new ChellTuner()); // HLsub
-    Thread.sleep(60_000);
+    Thread.sleep(60 * 1000);
 }
 // END OMIT
     }

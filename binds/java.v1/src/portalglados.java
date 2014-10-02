@@ -30,15 +30,14 @@ public class PortalGlados {
 
 // START OMIT
 // Connect to the Iris network as GLaDOS
-try (Connection conn = new Connection(55555)) { // HLpub
-    // Publish the nice wishes on an Iris topic
+try (Connection connection = new Connection(55555)) { // HLpub
     System.out.println("GLaDOS is online, sending wishes...");
 
     while (true) {
-        // Pick a random wish
-        int idx = new Random().nextInt(wishes.length);
+        // Pick a random wish from hidden 'wishes' array
+        String wish = wishes[new Random().nextInt(wishes.length)];
 
-        conn.publish("official", ("GLaDOS: " + wishes[idx]).getBytes()); // HLpub
+        connection.publish("official", ("GLaDOS: " + wish).getBytes()); // HLpub
         Thread.sleep(5000);
     }
 }
