@@ -1,5 +1,5 @@
-Iris through Java... API v1
-Enterprise messaging, the way it should have been
+Iris through Scala... API v1
+High performance decentralized cloud messaging
 
 Péter Szilágyi
 
@@ -21,13 +21,13 @@ peterke@gmail.com
 - Perfect secrecy against passive and active attacks
 - Beautiful, simple and language agnostic API
 
-.image java.v1/whitespace.png 0 0
+.image scala.v1/whitespace.png 0 0
 
 I.e. If starting a batch of VMs on Google Compute Engine is a one liner,
 
   gcutil addinstance vm-1 vm-2 ... vm-N
 
-.image java.v1/whitespace.png 0 0
+.image scala.v1/whitespace.png 0 0
 
 Assembling them into a distributed system should be a one liner too!
 
@@ -37,7 +37,7 @@ Assembling them into a distributed system should be a one liner too!
 
 * It communicates, of course!
 
-.image java.v1/img/overview_schemes.png 280 0
+.image scala.v1/img/overview_schemes.png 280 0
 
 - Req/Rep: Load balanced request handling by a specific cluster of nodes
 - Broadcast: Multicast messaging to all members of a cluster of nodes
@@ -48,7 +48,7 @@ Assembling them into a distributed system should be a one liner too!
 
 * Instances consolidated based on responsibility
 
-.image java.v1/img/overview_instances_vs_clusters.png 283 0
+.image scala.v1/img/overview_instances_vs_clusters.png 283 0
 
 Clusters are the smallest _logical_ units
 
@@ -59,7 +59,7 @@ Clusters are the smallest _logical_ units
 
 * Meaningful and non-dynamic addressing
 
-.image java.v1/img/overview_physical_vs_semantic.png 283 0
+.image scala.v1/img/overview_physical_vs_semantic.png 283 0
 
 Routing based on semantic addressing
 
@@ -70,7 +70,7 @@ Routing based on semantic addressing
 
 * Implicit security while trusting the trustworthy
 
-.image java.v1/img/overview_authentication_and_encryption.png 283 0
+.image scala.v1/img/overview_authentication_and_encryption.png 283 0
 
 Security at service level
 
@@ -89,29 +89,29 @@ Assemble a network of micro services:
 - Permit any number to be under the same name
 - Enable decentralized communication between them
 
-.html java.v1/embed/challenge_screws.html
+.html scala.v1/embed/challenge_screws.html
 
 * Solution #0 – Service
 
-.play java.v1/src/service.java /START OMIT/,/END OMIT/ HLreg
+.play scala.v1/src/service.scala /START OMIT/,/END OMIT/ HLreg
 
 _Note:_Connecting_as_a_simple_client_is_ [[http://iris.karalabe.com/docs/iris-jvm.v1/com/karalabe/iris/Connection.html#Connection-int-][_also_supported_]].
 
 * Service highlights
 
-.html java.v1/ref/service_new.html
+.html scala.v1/ref/service_new.html
 
-  new Service(int port, String cluster, ServiceHandler handler)
+  new Service(port: int, cluster: String, handler: ServiceHandler)
 - Connects to the local Iris message relay on port _port_
 - Registers the connecting service as a member of _cluster_
 - Assigns _handler_ as the callback for inbound service events
 - Concurrency and queue size configurable with +1 parameter
 
-.image java.v1/whitespace.png 0 0
+.image scala.v1/whitespace.png 0 0
 
-.html java.v1/ref/servicehandler_init.html
+.html scala.v1/ref/servicehandler_init.html
 
-  @Override void ServiceHandler::init(Connection connection)
+  override def ServiceHandler::init(connection: Connection): Unit
 - Called once after the service is registered into the Iris network
 - May initialize any internal state dependent on the live connection
 
@@ -123,38 +123,38 @@ Simulate a system for handling web requests:
 - Web servers handle requests
 - Distribute requests between servers
 
-.html java.v1/embed/challenge_web.html
+.html scala.v1/embed/challenge_web.html
 
 * Solution #1 – Browser
 
-.play java.v1/src/webbrowser.java /START OMIT/,/END OMIT/ HLreq
+.play scala.v1/src/webbrowser.scala /START OMIT/,/END OMIT/ HLreq
 
-_Hint:_Start_ [[java.v1.slide#16][_some_]] _webservers_and_check_back_ 😉
+_Hint:_Start_ [[scala.v1.slide#16][_some_]] _webservers_and_check_back_ 😉
 
 * Solution #1 – Web server
 
-.play java.v1/src/webserver.java /START OMIT/,/END OMIT/ HLreq
+.play scala.v1/src/webserver.scala /START OMIT/,/END OMIT/ HLreq
 
-_The_presentation_supports_only_one_active_demo_process_per_window._ [[java.v1.slide#16][_Open_]] _new_tab?_
+_The_presentation_supports_only_one_active_demo_process_per_window._ [[scala.v1.slide#16][_Open_]] _new_tab?_
 
 * Request / Reply highlights
 
-.html java.v1/ref/connection_request.html
+.html scala.v1/ref/connection_request.html
 
-	byte[] Connection::request(String cluster, byte[] request, long timeout)
+	Connection::request(cluster: String, request: Array[Byte], timeout: long): Array[Byte]
 - Issues a synchronous request to member of _cluster_
 - Requests are load balanced between all members of _cluster_
 
-.image java.v1/whitespace.png 0 0
+.image scala.v1/whitespace.png 0 0
 
-.html java.v1/ref/servicehandler_handlerequest.html
+.html scala.v1/ref/servicehandler_handlerequest.html
 
-	@Override byte[] ServiceHandler::handleRequest(byte[] request)
+	override def ServiceHandler::handleRequest(request: Array[Byte]): Array[Byte]
 - Invoked when a request arrives to the local service
 - Result (reply or exception) is forwarded back to the caller
 - Concurrency is as defined by the limits during registration
 
-.html java.v1/embed/scheme_reqrep.html
+.html scala.v1/embed/scheme_reqrep.html
 
 * Challenge #2 – Aperture Science Enrichment Center 😈
 
@@ -164,45 +164,41 @@ Implement the comlink for Aperture Laboratories¹:
 - Send the usual good wishes from GLaDOS
 - Maybe find some old message remnants?
 
-.html java.v1/embed/challenge_portal.html
-.html java.v1/embed/challenge_portal_footnote.html
+.html scala.v1/embed/challenge_portal.html
+.html scala.v1/embed/challenge_portal_footnote.html
 
 * Solution #2 – GLaDOS
 
-.image java.v1/whitespace.png 0 0
+.play scala.v1/src/portalglados.scala /START OMIT/,/END OMIT/ HLpub
 
-.play java.v1/src/portalglados.java /START OMIT/,/END OMIT/ HLpub
-
-_Hint:_Boot_GLaDOS_and_let_the_ [[java.v1.slide#20][_experiment_]] _begin_ 😉
+_Hint:_Boot_GLaDOS_and_let_the_ [[scala.v1.slide#20][_experiment_]] _begin_ 😉
 
 * Solution #2 – Chell
 
-.image java.v1/whitespace.png 0 0
-
-.play java.v1/src/portalchell.java /START OMIT/,/END OMIT/ HLsub
+.play scala.v1/src/portalchell.scala /START OMIT/,/END OMIT/ HLsub
 
 _Hint:_Maybe_there_is_an_"unofficial"_channel?_ 😉
 
 * Publish / Subscribe highlights
 
-.html java.v1/ref/connection_subscribe.html
+.html scala.v1/ref/connection_subscribe.html
 
-	void Connection::subscribe(String topic, TopicHandler handler)
+	Connection::subscribe(topic: String, handler: TopicHandler): Unit
 - Subscribes the connection to events on _topic_
 - Assigns _handler_ as the event callback for _topic_
 - Limits configurable with additional parameter
 
-.image java.v1/whitespace.png 0 0
+.image scala.v1/whitespace.png 0 0
 
-.html java.v1/ref/connection_publish.html
+.html scala.v1/ref/connection_publish.html
 
-	void Connection::publish(String topic, byte[] event)
+	Connection::publish(topic: String, event: Array[Byte]): Unit
 - Publishes an event asynchronously to _topic_
 
-.html java.v1/embed/scheme_pubsub.html
-.html java.v1/ref/topichandler_handleevent.html
+.html scala.v1/embed/scheme_pubsub.html
+.html scala.v1/ref/topichandler_handleevent.html
 
-	@Override void TopicHandler::handleEvent(byte[] event)
+	override def TopicHandler::handleEvent(event: Array[Byte]): Unit
 - Invoked when an event arrives to the subscribed topic
 
 * Challenge #3 – Data repository
@@ -213,47 +209,52 @@ Implement a data distribution system:
 - Clients make requests for the data blobs
 - Ordered and throttled data transfers
 
-.html java.v1/embed/challenge_repo.html
+.html scala.v1/embed/challenge_repo.html
 
 * Solution #3 – Client
 
-.play java.v1/src/repoclient.java /START OMIT/,/END OMIT/ HLtunnel
+.play scala.v1/src/repoclient.scala /START OMIT/,/END OMIT/ HLtunnel
 
-_Hint:_Start_ [[java.v1.slide#24][_some_]] _data_repositories_ 😉
+_Hint:_Start_ [[scala.v1.slide#24][_some_]] _data_repositories_ 😉
 
 * Solution #3 – Data store
 
-.play java.v1/src/reposerver.java /START OMIT/,/END OMIT/ HLtunnel
+.play scala.v1/src/reposerver.scala /START OMIT/,/END OMIT/ HLtunnel
 
-_The_presentation_supports_only_one_active_demo_process_per_window._ [[java.v1.slide#24][_Open_]] _new_tab?_
+- Error handling was omitted for clarity
+- Service registration was hidden for clarity
+
+.image scala.v1/whitespace.png 0 0
+
+_The_presentation_supports_only_one_active_demo_process_per_window._ [[scala.v1.slide#24][_Open_]] _new_tab?_
 
 * Tunnel highlights
 
-.html java.v1/ref/connection_tunnel.html
+.html scala.v1/ref/connection_tunnel.html
 
-	Tunnel Connection::tunnel(String cluster, long timeout)
+	Connection::tunnel(cluster: String, timeout: long): Tunnel
 - Opens a direct tunnel to a member of _cluster_
 - Order is guaranteed, data flow is throttled
 
-.image java.v1/whitespace.png 0 0
+.image scala.v1/whitespace.png 0 0
 
-.html java.v1/ref/tunnel_send.html
+.html scala.v1/ref/tunnel_send.html
 
-	void Tunnel::send(byte[] message, long timeout)
+	Tunnel::send(message: Array[Byte], timeout: long): Unit
 - Sends a message over the tunnel to the remote pair
 - Partial sends (timeout) are discarded remotely
 
-.html java.v1/embed/scheme_tunnel.html
-.html java.v1/ref/tunnel_receive.html
+.html scala.v1/embed/scheme_tunnel.html
+.html scala.v1/ref/tunnel_receive.html
 
-	byte[] Tunnel::receive(long timeout)
+	Tunnel::receive(timeout: long): Array[Byte]
 - Retrieves a message from the tunnel
 
 * How does this all work?
 
 * Sneak behind the scenes
 
-.html java.v1/embed/overview_relay.html
+.html scala.v1/embed/overview_relay.html
 
 Iris nodes do the heavy lifting (one/host):
 
@@ -262,7 +263,7 @@ Iris nodes do the heavy lifting (one/host):
 - Data encryption
 - Load balancing
 
-.image java.v1/whitespace.png 0 0
+.image scala.v1/whitespace.png 0 0
 
 Thin clients bathe in the glory:
 
@@ -277,7 +278,7 @@ Iris resources
 - The book of Iris: [[http://iris.karalabe.com/book]]
 - Yummy goodies: [[http://iris.karalabe.com/talks][talks]] | [[http://iris.karalabe.com/papers][papers]] | [[http://iris.karalabe.com/downloads][downloads]]
 
-.image java.v1/whitespace.png 0 0
+.image scala.v1/whitespace.png 0 0
 
 Iris community:
 
