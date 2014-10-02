@@ -1,6 +1,6 @@
 diff -r 2f7aa2d4d377 playground/socket/socket.go
 --- a/playground/socket/socket.go	Fri Aug 01 15:04:49 2014 -0700
-+++ b/playground/socket/socket.go	Thu Oct 02 13:39:21 2014 +0300
++++ b/playground/socket/socket.go	Thu Oct 02 16:31:45 2014 +0300
 @@ -28,10 +28,12 @@
  	"os"
  	"os/exec"
@@ -23,7 +23,7 @@ diff -r 2f7aa2d4d377 playground/socket/socket.go
  	<-p.done // block until process exits
  }
  
-@@ -242,48 +244,118 @@
+@@ -242,49 +244,121 @@
  	// (rather than the go tool process).
  	// This makes Kill work.
  
@@ -125,6 +125,7 @@ diff -r 2f7aa2d4d377 playground/socket/socket.go
 -	args = append(args, "-o", bin, file)
  	cmd := p.cmd(dir, args...)
  	cmd.Stdout = cmd.Stderr // send compiler output to stderr
++	p.out <- &Message{Id: p.id, Kind: "stdout", Body: "Compiling program...\n"}
  	if err := cmd.Run(); err != nil {
  		return err
  	}
@@ -147,9 +148,6 @@ diff -r 2f7aa2d4d377 playground/socket/socket.go
  		}
 -	} else {
 -		cmd = p.cmd("", bin)
--	}
--	if opt != nil && opt.Race {
--		cmd.Env = append(cmd.Env, "GOMAXPROCS=2")
 +		if opt != nil && opt.Race {
 +			cmd.Env = append(cmd.Env, "GOMAXPROCS=2")
 +		}
@@ -163,22 +161,28 @@ diff -r 2f7aa2d4d377 playground/socket/socket.go
 +	case "scala":
 +		cmd = p.cmd(bin, "scala", "-cp", os.Getenv("CLASSPATH")+":.", id)
  	}
+-	if opt != nil && opt.Race {
+-		cmd.Env = append(cmd.Env, "GOMAXPROCS=2")
+-	}
++	p.out <- &Message{Id: p.id, Kind: "stdout", Body: "Executing program...\n"}
  	if err := cmd.Start(); err != nil {
  		// If we failed to exec, that might be because they built
-@@ -308,8 +380,11 @@
+ 		// a non-main package instead of an executable.
+@@ -308,8 +382,12 @@
  // end sends an "end" message to the client, containing the process id and the
  // given error value. It also removes the binary.
  func (p *process) end(err error) {
 +	// Force kill children even if parent stopped gracefully
-+	syscall.Kill(-p.run.Process.Pid, syscall.SIGKILL)
-+
++	if p.run != nil {
++		syscall.Kill(-p.run.Process.Pid, syscall.SIGKILL)
++	}
  	if p.bin != "" {
 -		defer os.Remove(p.bin)
 +		defer os.RemoveAll(p.bin)
  	}
  	m := &Message{Id: p.id, Kind: "end"}
  	if err != nil {
-@@ -322,7 +397,7 @@
+@@ -322,7 +400,7 @@
  // cmd builds an *exec.Cmd that writes its standard output and error to the
  // process' output channel.
  func (p *process) cmd(dir string, args ...string) *exec.Cmd {
