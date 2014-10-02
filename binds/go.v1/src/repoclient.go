@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"gopkg.in/inconshreveable/log15.v2"
@@ -15,29 +14,28 @@ func init() {
 
 func main() {
 	// Connect to the Iris network
-	conn, err := iris.Connect(55555)
+	connection, err := iris.Connect(55555)
 	if err != nil {
 		panic(err)
 	}
-	defer conn.Close()
+	defer connection.Close()
 
-	// START OMIT
-
+// START OMIT
 // Open an outbound tunnel to a data store
-tun, err := conn.Tunnel("Gopher Library", time.Second) // HLtunnel
+tunnel, err := connection.Tunnel("repository", time.Second) // HLtunnel
 if err != nil {
-	log.Fatalf("Data store connection failed: %v", err)
+	fmt.Printf("Tunneling failed: %v", err); return
 }
-defer tun.Close() // HLtunnel
+defer tunnel.Close() // HLtunnel
 
 // Request a file and retrieve the multi-part response
-tun.Send([]byte("some file"), time.Second) // HLtunnel
+tunnel.Send([]byte("some file"), time.Second) // HLtunnel
 for {
-	msg, err := tun.Recv(time.Second) // HLtunnel
+	msg, err := tunnel.Recv(time.Second) // HLtunnel
 	if err != nil {
 		break
 	}
 	fmt.Println(string(msg))
 }
-	// END OMIT
+// END OMIT
 }

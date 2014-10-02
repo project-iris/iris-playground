@@ -32,7 +32,7 @@ override def handleTunnel(tunnel: Tunnel) { // HLtunnel
 // END OMIT
     }
 
-    // Connect to the Iris network
+    // Connect to the Iris network, serve a while, then quit
     val service = new Service(55555, "repository", new RepoServer) // HLreq
     try {
       System.out.println("Waiting for inbound tunnels...")

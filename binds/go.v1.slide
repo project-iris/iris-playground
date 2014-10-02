@@ -221,7 +221,8 @@ _Hint:_Start_ [[go.v1.slide#24][_some_]] _data_repositories_ 😉
 
 .play go.v1/src/reposerver.go /START OMIT/,/END OMIT/ HLtunnel
 
-Note, service registration was omitted for clarity.
+- Proper error handling was omitted for clarity
+- Service registration was hidden for clarity
 
 .image go.v1/whitespace.png 0 0
 

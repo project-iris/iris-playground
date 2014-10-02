@@ -225,7 +225,7 @@ _Hint:_Start_ [[erlang.v1.slide#24][_some_]] _data_repositories_ 😉
 
 .play erlang.v1/src/reposerver.erl /START OMIT/,/END OMIT/ HLtunnel
 
-Note, service registration was omitted for clarity.
+- Service registration was hidden for clarity
 
 .image erlang.v1/whitespace.png 0 0
 
