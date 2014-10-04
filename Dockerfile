@@ -66,9 +66,9 @@ ENV PATH $PATH:$SCALA_HOME/bin
 RUN git config --global url."https://".insteadOf git://
 
 # Download the Iris node and allow execution
-ENV IRIS iris-v0.3.1-linux-amd64
+ENV IRIS iris-v0.3.2-linux-amd64
 RUN \
-  $FETCH http://iris.karalabe.com/downloads/$IRIS 1385c444748d7e5b135cc23626c669b26e87f867 && \
+  $FETCH http://iris.karalabe.com/downloads/$IRIS 111c781c26b1df04e9366009cce773b415afe1ed && \
   chmod +x $IRIS
 
 # Download and install the Go binding
@@ -94,9 +94,9 @@ RUN \
 # Download and install the Java bindings
 ENV CLASSPATH /binds/java
 RUN \
-  export JAR_VER=1.0.0-preview-7 && \
-  mkdir -p $CLASSPATH            && \
-  cd $CLASSPATH                  && \
+  export JAR_VER=1.0.0 && \
+  mkdir -p $CLASSPATH  && \
+  cd $CLASSPATH        && \
   \
   wget http://repo1.maven.org/maven2/com/karalabe/iris/iris/$JAR_VER/iris-$JAR_VER.pom && \
   mvn org.apache.maven.plugins:maven-dependency-plugin:2.8:copy-dependencies \
