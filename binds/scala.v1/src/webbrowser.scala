@@ -18,8 +18,8 @@ try {
     for (i <- 1 to 60) {
         val request = s"Request #$i".getBytes
         Try(connection.request("webserver", request, 1000)) match { // HLreq
-            case Success(reply) => System.out.println("Web reply: " + new String(reply))
-            case Failure(error) => System.out.println("Request failed: " + error.getMessage)
+            case Success(reply) => println("Web reply: " + new String(reply))
+            case Failure(error) => println("Request failed: " + error.getMessage)
         }
         Thread.sleep(1000)
     }

@@ -20,7 +20,7 @@ object RepoClient {
 // Open an outbound tunnel to a data store
 Try(connection.tunnel("repository", 1000)) match { // HLtunnel
     case Failure(error) =>
-        System.out.println("Tunneling failed: " + error.getMessage());
+        println("Tunneling failed: " + error.getMessage());
 
     case Success(tunnel) =>
         // Request a file and retrieve the multi-part response
@@ -29,7 +29,7 @@ Try(connection.tunnel("repository", 1000)) match { // HLtunnel
         var active = true
         while (active) {
             Try(tunnel.receive) match { // HLtunnel
-                case Success(message) => System.out.println(new String(message))
+                case Success(message) => println(new String(message))
                 case Failure(error)   => active = false
             }
         }

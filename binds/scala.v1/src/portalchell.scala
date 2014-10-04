@@ -12,13 +12,13 @@ object PortalChellEntry {
 // Topic subscription handler processing inbound events
 class Chell extends TopicHandler {
     override def handleEvent(event: Array[Byte]) { // HLsub
-        System.out.println(new String(event) + "\n")
+        println(new String(event) + "\n")
     }
 }
 // Connect to the Iris network as Chell
 val connection = new Connection(55555) // HLsub
 try {
-    System.out.println("Tuning in to Aperture channels...");
+    println("Tuning in to Aperture channels...");
     connection.subscribe("official", new Chell) // HLsub
 
     Thread.sleep(60 * 1000)

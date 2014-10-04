@@ -31,7 +31,7 @@ object PortalGlados {
 // Connect to the Iris network as GLaDOS
 val connection = new Connection(55555) // HLpub
 try {
-    System.out.println("GLaDOS is online, sending wishes...")
+    println("GLaDOS is online, sending wishes...")
 
     while (true) {
         // Pick a random wish from hidden 'wishes' array
